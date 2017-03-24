@@ -1,4 +1,4 @@
-package io.vertx;
+package io.vertx.bean;
 
 
 public class Balance {
