@@ -1,29 +1,26 @@
 package io.vertx.controller;
 
 import io.vertx.bean.Account;
-import io.vertx.bean.Currency;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.HttpServerResponse;
-import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.mockdao.AccountDAO;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class BankbridgeAPI extends AbstractVerticle {
 
-    private AccountDAO accountDAO;
+    private AccountDAO accountDAO = new AccountDAO();
 
-    private Map<String, JsonObject> accounts = new HashMap<>();
+    //private Map<String, JsonObject> accounts = new HashMap<>();
 
     @Override
     public void start() {
 
-        setUpInitialData();
+        //setUpInitialData();
+        accountDAO.getAllAccounts();
 
         Router router = Router.router(vertx);
 
@@ -47,7 +44,7 @@ public class BankbridgeAPI extends AbstractVerticle {
             if (account == null) {
                 sendError(400, response);
             } else {
-                accounts.put(accountId, account);
+                //accounts.put(accountId, account);
                 response.end();
             }
         }
@@ -60,7 +57,7 @@ public class BankbridgeAPI extends AbstractVerticle {
         if (accountId == null) {
             sendError(400, response);
         } else {
-            JsonObject account = accounts.get(accountId);
+            JsonObject account = null;//accounts.get(accountId);
             if (account == null) {
                 sendError(404, response);
             } else {
@@ -69,40 +66,12 @@ public class BankbridgeAPI extends AbstractVerticle {
         }
     }
 
-    private void setUpInitialData() {
 
-        JsonObject balanceObj = new JsonObject().put("currency", Currency.NOK).put("amount", 25000.00);
-        JsonObject ownerObj = new JsonObject().put("id", "mai").put("provider", "https://psd2-api.openbankproject.com")
-                .put("display_name", "mai");
-
-
-        for (int i = 0; i <= 4; i++) {
-
-            String accountId = "BANKBRIDGE123" + i;
-
-            addAccount(new JsonObject().
-                    put("id", accountId).
-                    put("label", "").
-                    put("number", "6625231013").
-                    put("type", "").
-                    put("IBAN", "NO93 8601 1117 948").
-                    put("SWIFT", "").
-                    put("bank_id", "psd201-bank-x--no").
-                    put("balance", balanceObj).
-                    put("owner", ownerObj));
-
-        }
-    }
-
-    private void addAccount(JsonObject account) {
-        accounts.put(account.getString("id"), account);
-    }
 
     private void getAllAccount(RoutingContext routingContext) {
-
-        JsonArray arr = new JsonArray();
-        accounts.forEach((k, v) -> arr.add(v));
-        routingContext.response().putHeader("content-type", "application/json").end(arr.encodePrettily());
+        Account account = accountDAO.getAccountById("12345");
+        String json = Json.encodePrettily(account);
+        routingContext.response().putHeader("content-type", "application/json").end(json);
     }
 
     private void sendError(int statusCode, HttpServerResponse response) {

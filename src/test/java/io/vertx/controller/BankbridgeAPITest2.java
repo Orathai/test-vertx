@@ -9,10 +9,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static org.junit.Assert.*;
-
 @RunWith(VertxUnitRunner.class)
-public class BankbridgeAPITest {
+public class BankbridgeAPITest2 {
 
     private Vertx vertx;
 
