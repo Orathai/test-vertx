@@ -12,36 +12,7 @@ public class AccountDAO {
     //private OwnerDAO ownerDAO = new OwnerDAO();
     private static final List<Account> ACCOUNT_LIST = new ArrayList<>();
 
-    public Account findByAccountId(String id) {
-
-        Account result = new Account();
-
-        for (Account account : ACCOUNT_LIST){
-            if(account.getId().equals(id)){
-                result = account;
-
-            }
-        }
-        return result;
-
-
-        /*Balance balance = new Balance(Currency.EURO, 10000);
-        Owner owner = new Owner("mai", "https://psd2-api.openbankproject.com", "mai");
-
-        Account account = new Account(
-                id,
-                null,
-                "6625231013",
-                null,
-                null,
-                null,
-                "psd201-bank-x--uk",
-                balance, owner);
-
-        return account;*/
-    }
-
-    public List<Account> findAllAccount() {
+    public List<Account> initData() {
         Balance balance = new Balance(Currency.EURO, 10000);
         Owner owner = new Owner("mai", "https://psd2-api.openbankproject.com", "mai");
 
@@ -62,6 +33,24 @@ public class AccountDAO {
 
         }
         return ACCOUNT_LIST;
+
+    }
+
+    public Account findByAccountId(String id) {
+
+        Account result = new Account();
+
+        for (Account account : ACCOUNT_LIST) {
+            if (account.getId().equals(id)) {
+                result = account;
+
+            }
+        }
+        return result;
+    }
+
+    public List<Account> findAllAccount() {
+        return ACCOUNT_LIST;
     }
 
     public int updateByAccountId(Account account) {
@@ -72,18 +61,16 @@ public class AccountDAO {
             if (oldAccount.getId().equals(account.getId())) {
 
                 oldAccount.setBank_id(account.getBank_id());
-                /*oldAccount.setIBAN(account.getIBAN());
+                oldAccount.setIBAN(account.getIBAN());
                 oldAccount.setLabel(account.getLabel());
                 oldAccount.setNumber(account.getNumber());
                 oldAccount.setType(account.getType());
                 oldAccount.setSWIFT(account.getSWIFT());
                 oldAccount.setOwner(account.getOwner());
-                oldAccount.setBalance(account.getBalance());*/
+                oldAccount.setBalance(account.getBalance());
 
                 int index = ACCOUNT_LIST.indexOf(oldAccount);
-                ACCOUNT_LIST.set(index, oldAccount);
-
-                System.out.println(oldAccount.getBank_id());
+                ACCOUNT_LIST.set(index, account);
 
                 return 1;
             }

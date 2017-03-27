@@ -22,7 +22,7 @@ public class BankbridgeAPI extends AbstractVerticle {
     @Override
     public void start() {
 
-
+        accountDAO.initData();
 
         Router router = Router.router(vertx);
 
@@ -84,24 +84,20 @@ public class BankbridgeAPI extends AbstractVerticle {
     //Its a mess
     private void updateByAccountId(RoutingContext routingContext) {
 
-        //Account account = Json.decodeValue(routingContext.getBodyAsString(), Account.class);
 
+        Account update = Json.decodeValue(routingContext.getBodyAsString(), Account.class);
         String accountId = routingContext.request().getParam("id");
-        //log.debug("updating account .." + accountId);
-        System.out.println("updating account .." + accountId);
-
         Account account = accountDAO.findByAccountId(accountId);
 
         if (account.getId() == null) {
-            routingContext.response().setStatusCode(400).end();
-
+            routingContext.response().setStatusCode(404).end();
         } else {
-            account.setBank_id("from controller");
+            account.setBank_id(update.getBank_id());
+            account.setIBAN(update.getIBAN());
+            //account.setBalance(balance);
             accountDAO.updateByAccountId(account);
-
-            routingContext.response().setStatusCode(200).end();
-
         }
+        routingContext.response().setStatusCode(201).end();
 
     }
 
