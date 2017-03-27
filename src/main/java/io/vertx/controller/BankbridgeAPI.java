@@ -10,17 +10,14 @@ import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.mockdao.AccountDAO;
 
+import java.util.List;
+
 public class BankbridgeAPI extends AbstractVerticle {
 
     private AccountDAO accountDAO = new AccountDAO();
 
-    //private Map<String, JsonObject> accounts = new HashMap<>();
-
     @Override
     public void start() {
-
-        //setUpInitialData();
-        accountDAO.getAllAccounts();
 
         Router router = Router.router(vertx);
 
@@ -53,24 +50,26 @@ public class BankbridgeAPI extends AbstractVerticle {
     private void getByAccountId(RoutingContext routingContext) {
 
         String accountId = routingContext.request().getParam("id");
+        Account account = accountDAO.getAccountById(accountId);
+
         HttpServerResponse response = routingContext.response();
-        if (accountId == null) {
+        if (account.getId() == null) {
             sendError(400, response);
         } else {
-            JsonObject account = null;//accounts.get(accountId);
-            if (account == null) {
+            String json = Json.encodePrettily(account);
+            if (json == null) {
                 sendError(404, response);
             } else {
-                response.putHeader("content-type", "application/json").end(account.encodePrettily());
+                response.putHeader("content-type", "application/json").end(json);
             }
         }
     }
 
 
-
     private void getAllAccount(RoutingContext routingContext) {
-        Account account = accountDAO.getAccountById("12345");
-        String json = Json.encodePrettily(account);
+        List<Account> accountList = accountDAO.getAllAccount();
+
+        String json = Json.encodePrettily(accountList);
         routingContext.response().putHeader("content-type", "application/json").end(json);
     }
 

@@ -1,56 +1,62 @@
 package io.vertx.mockdao;
 
 import io.vertx.bean.Account;
+import io.vertx.bean.Balance;
 import io.vertx.bean.Currency;
+import io.vertx.bean.Owner;
 import io.vertx.core.json.JsonObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class AccountDAO {
+    private OwnerDAO ownerDAO = new OwnerDAO();
 
-    private Map<String, JsonObject> accounts = new HashMap<>();
+    public Account getAccountById(String id) {
 
-    public List<Account> getAllAccountsNg(){
-        return null;
+        Balance balance = new Balance(Currency.EURO, 10000);
+        Owner owner = new Owner("mai", "https://psd2-api.openbankproject.com", "mai");
+
+        Account account = new Account(
+                id,
+                null,
+                "6625231013",
+                null,
+                null,
+                null,
+                "psd201-bank-x--uk",
+                balance, owner);
+
+        return account;
     }
 
-    public Account getAccountById( String id ) {
-        return new Account(id, "dummy", "dummy", "dummy", "dummy", "dummy", "dummy", null,null);
-    }
-
-    public JsonObject getAllAccounts(){
-
-        JsonObject balanceObj = new JsonObject().put("currency", Currency.NOK).put("amount", 25000.00);
-        JsonObject ownerObj = new JsonObject().put("id", "mai").put("provider", "https://psd2-api.openbankproject.com")
-                .put("display_name", "mai");
+    public List<Account> getAllAccount() {
+        Balance balance = new Balance(Currency.EURO, 10000);
+        Owner owner = new Owner("mai", "https://psd2-api.openbankproject.com", "mai");
+        //create owner
+        ArrayList<Account> accountList = new ArrayList<>();
 
 
 
-        JsonObject accountObj = new JsonObject();
-
+        //create mock 5 accounts
         for (int i = 0; i <= 4; i++) {
-
             String accountId = "BANKBRIDGE123" + i;
 
-            addAccount(new JsonObject().
-                    put("id", accountId).
-                    put("label", "").
-                    put("number", "6625231013").
-                    put("type", "").
-                    put("IBAN", "NO93 8601 1117 948").
-                    put("SWIFT", "").
-                    put("bank_id", "psd201-bank-x--no").
-                    put("balance", balanceObj).
-                    put("owner", ownerObj));
+            Account account = new Account(
+                    accountId,
+                    null,
+                    "6625231013",
+                    null,
+                    null,
+                    null,
+                    "psd201-bank-x--uk",
+                    balance, owner);
+            accountList.add(account);
 
         }
-        return accountObj;
-    }
-
-    private void addAccount(JsonObject account) {
-        accounts.put(account.getString("id"), account);
+        return accountList;
     }
 
 }
