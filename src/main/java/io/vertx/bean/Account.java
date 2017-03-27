@@ -32,6 +32,18 @@ public class Account {
         this.owner = owner;
     }
 
+    public Account() {
+        this.id = id;
+        this.label = label;
+        this.number = number;
+        this.type = type;
+        this.IBAN = IBAN;
+        this.SWIFT = SWIFT;
+        this.bank_id = bank_id;
+        this.balance = balance;
+        this.owner = owner;
+    }
+
     public String getId() {
         return id;
     }

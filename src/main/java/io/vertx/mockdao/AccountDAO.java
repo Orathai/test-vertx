@@ -4,19 +4,28 @@ import io.vertx.bean.Account;
 import io.vertx.bean.Balance;
 import io.vertx.bean.Currency;
 import io.vertx.bean.Owner;
-import io.vertx.core.json.JsonObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class AccountDAO {
-    private OwnerDAO ownerDAO = new OwnerDAO();
+    //private OwnerDAO ownerDAO = new OwnerDAO();
+    private static final List<Account> ACCOUNT_LIST = new ArrayList<>();
 
-    public Account getAccountById(String id) {
+    public Account findByAccountId(String id) {
 
-        Balance balance = new Balance(Currency.EURO, 10000);
+        Account result = new Account();
+
+        for (Account account : ACCOUNT_LIST){
+            if(account.getId().equals(id)){
+                result = account;
+
+            }
+        }
+        return result;
+
+
+        /*Balance balance = new Balance(Currency.EURO, 10000);
         Owner owner = new Owner("mai", "https://psd2-api.openbankproject.com", "mai");
 
         Account account = new Account(
@@ -29,16 +38,12 @@ public class AccountDAO {
                 "psd201-bank-x--uk",
                 balance, owner);
 
-        return account;
+        return account;*/
     }
 
-    public List<Account> getAllAccount() {
+    public List<Account> findAllAccount() {
         Balance balance = new Balance(Currency.EURO, 10000);
         Owner owner = new Owner("mai", "https://psd2-api.openbankproject.com", "mai");
-        //create owner
-        ArrayList<Account> accountList = new ArrayList<>();
-
-
 
         //create mock 5 accounts
         for (int i = 0; i <= 4; i++) {
@@ -53,10 +58,83 @@ public class AccountDAO {
                     null,
                     "psd201-bank-x--uk",
                     balance, owner);
-            accountList.add(account);
+            ACCOUNT_LIST.add(account);
 
         }
-        return accountList;
+        return ACCOUNT_LIST;
     }
+
+    public int updateByAccountId(Account account) {
+        System.out.println("...reading updateByAccountId");
+
+        for (Account oldAccount : ACCOUNT_LIST) {
+
+            if (oldAccount.getId().equals(account.getId())) {
+
+                oldAccount.setBank_id(account.getBank_id());
+                /*oldAccount.setIBAN(account.getIBAN());
+                oldAccount.setLabel(account.getLabel());
+                oldAccount.setNumber(account.getNumber());
+                oldAccount.setType(account.getType());
+                oldAccount.setSWIFT(account.getSWIFT());
+                oldAccount.setOwner(account.getOwner());
+                oldAccount.setBalance(account.getBalance());*/
+
+                int index = ACCOUNT_LIST.indexOf(oldAccount);
+                ACCOUNT_LIST.set(index, oldAccount);
+
+                System.out.println(oldAccount.getBank_id());
+
+                return 1;
+            }
+
+        }
+        return 0;
+    }
+
+    public int addNewAccount(Account account) {
+
+        if (!isAccountExist(account.getId())) {
+            ACCOUNT_LIST.add(account);
+            return 1;
+        }
+        return 0;
+    }
+
+    public int deleteByAccountId(String id) {
+
+        for (Account account : ACCOUNT_LIST) {
+            if (account.getId().equals(id)) {
+                int index = ACCOUNT_LIST.indexOf(account);
+                ACCOUNT_LIST.remove(index);
+                return 1;
+            }
+        }
+        return 0;
+    }
+
+    private boolean isAccountExist(String id) {
+
+        for (Account account : ACCOUNT_LIST) {
+            if (account.getId().equals(id)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /*public Account addNewAccount(String id,
+                                 String label,
+                                 String number,
+                                 String type,
+                                 String IBAN,
+                                 String SWIFT,
+                                 String bank_id,
+                                 Balance balance,
+                                 Owner owner){
+
+
+        return new Account(id, label, number, type, IBAN, SWIFT, bank_id, balance, owner);
+    }*/
 
 }

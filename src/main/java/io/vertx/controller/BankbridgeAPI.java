@@ -5,6 +5,8 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -15,21 +17,27 @@ import java.util.List;
 public class BankbridgeAPI extends AbstractVerticle {
 
     private AccountDAO accountDAO = new AccountDAO();
+    private static final Logger log = LoggerFactory.getLogger(BankbridgeAPI.class);
 
     @Override
     public void start() {
+
+
 
         Router router = Router.router(vertx);
 
         router.route().handler(BodyHandler.create());
         router.get("/accounts/:id").handler(this::getByAccountId);
         router.get("/accounts").handler(this::getAllAccount);
+        router.put("/accounts/:id").handler(this::updateByAccountId);
+        router.patch("/accounts/:id").handler(this::updateByAccountId);
         //router.post("/accounts").handler(this::addByAccountId);
+        router.delete("/accounts/:id").handler(this::deleteByAccountId);
 
         vertx.createHttpServer().requestHandler(router::accept).listen(8080);
     }
 
-    //TODO:implementing POST, PUT, DELETE
+    //TODO:implementing POST, PUT
     private void addByAccountId(RoutingContext routingContext) {
 
         String accountId = routingContext.request().getParam("id");
@@ -50,7 +58,7 @@ public class BankbridgeAPI extends AbstractVerticle {
     private void getByAccountId(RoutingContext routingContext) {
 
         String accountId = routingContext.request().getParam("id");
-        Account account = accountDAO.getAccountById(accountId);
+        Account account = accountDAO.findByAccountId(accountId);
 
         HttpServerResponse response = routingContext.response();
         if (account.getId() == null) {
@@ -67,10 +75,48 @@ public class BankbridgeAPI extends AbstractVerticle {
 
 
     private void getAllAccount(RoutingContext routingContext) {
-        List<Account> accountList = accountDAO.getAllAccount();
+        List<Account> accountList = accountDAO.findAllAccount();
 
         String json = Json.encodePrettily(accountList);
         routingContext.response().putHeader("content-type", "application/json").end(json);
+    }
+
+    //Its a mess
+    private void updateByAccountId(RoutingContext routingContext) {
+
+        //Account account = Json.decodeValue(routingContext.getBodyAsString(), Account.class);
+
+        String accountId = routingContext.request().getParam("id");
+        //log.debug("updating account .." + accountId);
+        System.out.println("updating account .." + accountId);
+
+        Account account = accountDAO.findByAccountId(accountId);
+
+        if (account.getId() == null) {
+            routingContext.response().setStatusCode(400).end();
+
+        } else {
+            account.setBank_id("from controller");
+            accountDAO.updateByAccountId(account);
+
+            routingContext.response().setStatusCode(200).end();
+
+        }
+
+    }
+
+    private void deleteByAccountId(RoutingContext routingContext) {
+
+        String accountId = routingContext.request().getParam("id");
+        Account account = accountDAO.findByAccountId(accountId);
+
+        if (account.getId() == null) {
+            routingContext.response().setStatusCode(400).end();
+        } else {
+            accountDAO.deleteByAccountId(account.getId());
+        }
+        routingContext.response().setStatusCode(204).end();
+
     }
 
     private void sendError(int statusCode, HttpServerResponse response) {
