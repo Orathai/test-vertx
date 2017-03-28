@@ -5,6 +5,12 @@ public class Owner {
     private String provider;
     private String display_name;
 
+    public Owner(){
+        this.id = id;
+        this.provider = provider;
+        this.display_name = display_name;
+    }
+
     public Owner(String id, String provider, String display_name) {
         this.id = id;
         this.provider = provider;

@@ -1,7 +1,9 @@
 package io.vertx.controller;
 
 import io.vertx.bean.Account;
+import io.vertx.bean.Balance;
 import io.vertx.bean.Currency;
+import io.vertx.bean.Owner;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.json.Json;
@@ -112,6 +114,50 @@ public class BankbridgeAPITest {
                 async.complete();
             });
         });
+
+    }
+
+    @Test
+    public void testAddAccount(TestContext context) {
+
+        final Async async = context.async();
+
+        Balance balance = new Balance(Currency.NOK, 50000);
+        Owner owner = new Owner("mai", "https://psd2-api.openbankproject.com", "mai");
+
+        Account account = new Account(
+                "BANKBRIDGE1235",
+                null,
+                "6625231013",
+                null,
+                null,
+                null,
+                "psd201-bank-x--uk",
+                balance, owner);
+
+        vertx.createHttpClient().getNow(8082, "localhost", "/accounts",
+                response -> {
+                    response.handler(body -> {
+                        context.assertEquals(response.statusCode(), 200);
+                        context.assertTrue(response.getHeader("content-type").contains("application/json"));
+                        context.assertEquals(account.getId(), "BANKBRIDGE1235");
+                        context.assertEquals(account.getBank_id(), "psd201-bank-x--uk");
+                        context.assertEquals(account.getLabel(), null);
+                        context.assertEquals(account.getNumber(), "6625231013");
+                        context.assertEquals(account.getIBAN(), null);
+                        context.assertEquals(account.getType(), null);
+                        context.assertEquals(account.getSWIFT(), null);
+                        context.assertEquals(account.getBalance().getAmount(), 50000.00);
+                        context.assertEquals(account.getBalance().getCurrency(), Currency.NOK);
+
+                        context.assertEquals(account.getOwner().getId(), "mai");
+                        context.assertEquals(account.getOwner().getDisplay_name(), "mai");
+                        context.assertEquals(account.getOwner().getProvider(),
+                                "https://psd2-api.openbankproject.com");
+
+                        async.complete();
+                    });
+                });
 
     }
 

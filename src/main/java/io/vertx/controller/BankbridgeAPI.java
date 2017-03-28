@@ -31,26 +31,27 @@ public class BankbridgeAPI extends AbstractVerticle {
         router.get("/accounts").handler(this::getAllAccount);
         router.put("/accounts/:id").handler(this::updateByAccountId);
         router.patch("/accounts/:id").handler(this::updateByAccountId);
-        //router.post("/accounts").handler(this::addByAccountId);
+        router.post("/accounts").handler(this::addByAccountId);
         router.delete("/accounts/:id").handler(this::deleteByAccountId);
 
         vertx.createHttpServer().requestHandler(router::accept).listen(8082);
     }
 
-    //TODO:implementing POST, PUT
+    //TODO:check duplicate id
     private void addByAccountId(RoutingContext routingContext) {
 
-        String accountId = routingContext.request().getParam("id");
+        Account newAccount = Json.decodeValue(routingContext.getBodyAsString(), Account.class);
+
         HttpServerResponse response = routingContext.response();
-        if (accountId == null) {
+        if (newAccount.getId() == null) {
             sendError(400, response);
         } else {
             JsonObject account = routingContext.getBodyAsJson();
             if (account == null) {
                 sendError(400, response);
             } else {
-                //accounts.put(accountId, account);
-                response.end();
+                accountDAO.addNewAccount(newAccount);
+                routingContext.response().setStatusCode(201).end();
             }
         }
     }

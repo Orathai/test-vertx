@@ -6,6 +6,12 @@ public class Balance {
     private Currency currency;
     private double amount;
 
+    public Balance(){
+        this.currency = currency;
+        this.amount = amount;
+
+    }
+
     public Balance(Currency currency, double amount) {
         this.currency = currency;
         this.amount = amount;

@@ -1,0 +1,18 @@
+{
+  "id" : "BANKBRIDGE12345",
+  "label" : null,
+  "number" : "6625231013",
+  "type" : null,
+  "bank_id" : "psd201-bank-x--no",
+  "balance" : {
+    "currency" : "EURO",
+    "amount" : 50000.00
+  },
+  "owner" : {
+    "id" : "mai",
+    "provider" : "https://psd2-api.openbankproject.com",
+    "display_name" : "mai"
+  },
+  "swift" : null,
+  "iban" : null
+}
