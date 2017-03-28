@@ -34,7 +34,7 @@ public class BankbridgeAPI extends AbstractVerticle {
         //router.post("/accounts").handler(this::addByAccountId);
         router.delete("/accounts/:id").handler(this::deleteByAccountId);
 
-        vertx.createHttpServer().requestHandler(router::accept).listen(8080);
+        vertx.createHttpServer().requestHandler(router::accept).listen(8082);
     }
 
     //TODO:implementing POST, PUT
@@ -74,6 +74,7 @@ public class BankbridgeAPI extends AbstractVerticle {
     }
 
 
+    //GET
     private void getAllAccount(RoutingContext routingContext) {
         List<Account> accountList = accountDAO.findAllAccount();
 
@@ -81,7 +82,7 @@ public class BankbridgeAPI extends AbstractVerticle {
         routingContext.response().putHeader("content-type", "application/json").end(json);
     }
 
-    //Its a mess
+    //PUT
     private void updateByAccountId(RoutingContext routingContext) {
 
 
@@ -101,6 +102,7 @@ public class BankbridgeAPI extends AbstractVerticle {
 
     }
 
+    //DELETE
     private void deleteByAccountId(RoutingContext routingContext) {
 
         String accountId = routingContext.request().getParam("id");
